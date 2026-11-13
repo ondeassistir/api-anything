@@ -23,3 +23,7 @@ The site automatically sent extensive advertising and analytics requests during 
 The additional reads use GET documents on www.metacritic.com. Learning used Breaking Bad and The Wire for TV, Elden Ring and The Godfather for critic reviews, and game and movie browse pages. Guest advertising storage again caused an unnecessary client-hint session reference and logged-in flag; both were removed.
 
 Held-out Severance matched its public profile: 85 Metascore, 82 critic reviews, 8.3 user score, 1,059 ratings, 2022, Feb 18, 2022 premiere and Apple TV+. Its critic-review page matched the first Collider review's score, critic, date and quote. The held-out TV browse page matched Planet Earth: Blue Planet II, its URL, score 97 and Jan 20, 2018 release. The critic-review page can omit dates, as seen for The Godfather. Browser captures automatically sent advertising and analytics requests; none was chosen. Writes remain excluded.
+
+### streamingMovies
+
+`streamingMovies` reads one page (100 movies) of the movie browse list filtered to titles on streaming services, 1910-2026, best Metascore first: `name`, `metascore` and `channels`. `page` starts at 1; keep paging until the list is empty. Checked logged out against the live page on 2026-11-13.

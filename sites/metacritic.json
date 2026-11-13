@@ -521,6 +521,73 @@
           "purpose": "Only supported title categories are accepted."
         }
       ]
+    },
+    {
+      "name": "streamingMovies",
+      "description": "One page (100 movies) of Metacritic's movie browse list, filtered to titles on streaming services, 1910-2026, best Metascore first. Returns name, metascore and channels. Pass page=1,2,3... until an empty list.",
+      "request": {
+        "method": "GET",
+        "url": "https://www.metacritic.com/browse/movie/?network=amazon&network=apple-tv&network=criterion-channel&network=discovery-plus&network=disney-plus&network=fubotv&network=hbo-max&network=hulu&network=itunes&network=netflix&network=paramount-plus&network=peacock&network=plex&network=pluto&network=prime-video&network=starz&network=sundance-now&network=tubi&network=vudu&network=youtube-premium&releaseYearMin=1910&releaseYearMax=2026&pageSize=100&page=1",
+        "headers": {
+          "accept": "text/html,application/xhtml+xml",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+        }
+      },
+      "slots": [
+        {
+          "param": "page",
+          "at": [
+            "query:page"
+          ]
+        }
+      ],
+      "volatile": [],
+      "trigger": {
+        "url": "https://www.metacritic.com/browse/movie/?network=amazon&network=apple-tv&network=criterion-channel&network=discovery-plus&network=disney-plus&network=fubotv&network=hbo-max&network=hulu&network=itunes&network=netflix&network=paramount-plus&network=peacock&network=plex&network=pluto&network=prime-video&network=starz&network=sundance-now&network=tubi&network=vudu&network=youtube-premium&releaseYearMin=1910&releaseYearMax=2026&pageSize=100&page={page}"
+      },
+      "match": {
+        "method": "GET",
+        "host": "www.metacritic.com",
+        "path": "/browse/movie/"
+      },
+      "response": {
+        "format": "html",
+        "contentType": "text/html",
+        "html": {
+          "items": "[data-testid=\"filter-results\"]",
+          "empty": "[data-testid=\"no-results\"]",
+          "fields": {
+            "name": "[data-title]@data-title",
+            "metascore": ".c-siteReviewScore span",
+            "channels": "all:span.iconify@title"
+          }
+        }
+      },
+      "params": [
+        {
+          "name": "page",
+          "type": "number",
+          "required": true,
+          "example": 1,
+          "min": 1,
+          "description": "Page number, 100 movies each, starting at 1."
+        }
+      ],
+      "paging": {
+        "param": "page"
+      },
+      "readOnly": true,
+      "minTier": 1,
+      "learnedLoggedIn": false,
+      "checks": [
+        {
+          "args": {
+            "page": 2
+          },
+          "expect": "result",
+          "purpose": "second page returns different movies"
+        }
+      ]
     }
   ]
 }
