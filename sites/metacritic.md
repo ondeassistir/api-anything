@@ -26,4 +26,4 @@ Held-out Severance matched its public profile: 85 Metascore, 82 critic reviews, 
 
 ### streamingMovies
 
-`streamingMovies` reads one page (100 movies) of the movie browse list filtered to titles on streaming services, 1910-2026, best Metascore first: `name`, `metascore` and `channels`. `page` starts at 1; keep paging until the list is empty. Checked logged out against the live page on 2026-11-13.
+`streamingMovies` reads one page (100 movies) of the movie browse list filtered to titles on streaming services, 1910-2026, best Metascore first: `name`, `url`, `metascore` and `channels`. `page` starts at 1; keep paging until the list is empty. Checked logged out against the live page on 2026-11-13.

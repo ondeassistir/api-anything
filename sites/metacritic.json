@@ -524,7 +524,7 @@
     },
     {
       "name": "streamingMovies",
-      "description": "One page (100 movies) of Metacritic's movie browse list, filtered to titles on streaming services, 1910-2026, best Metascore first. Returns name, metascore and channels. Pass page=1,2,3... until an empty list.",
+      "description": "One page (100 movies) of Metacritic's movie browse list, filtered to titles on streaming services, 1910-2026, best Metascore first. Returns name, url, metascore and channels. Pass page=1,2,3... until an empty list.",
       "request": {
         "method": "GET",
         "url": "https://www.metacritic.com/browse/movie/?network=amazon&network=apple-tv&network=criterion-channel&network=discovery-plus&network=disney-plus&network=fubotv&network=hbo-max&network=hulu&network=itunes&network=netflix&network=paramount-plus&network=peacock&network=plex&network=pluto&network=prime-video&network=starz&network=sundance-now&network=tubi&network=vudu&network=youtube-premium&releaseYearMin=1910&releaseYearMax=2026&pageSize=100&page=1",
@@ -559,7 +559,8 @@
           "fields": {
             "name": "[data-title]@data-title",
             "metascore": ".c-siteReviewScore span",
-            "channels": "all:span.iconify@title"
+            "channels": "all:span.iconify@title",
+            "url": "a@href"
           }
         }
       },
