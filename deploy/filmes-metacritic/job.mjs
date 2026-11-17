@@ -36,6 +36,8 @@ async function search(q) {
   for (let attempt = 1; ; attempt++) {
     const r = await call("metacritic", "search", { q });
     if (r.ok) return r.data;
+    // the op answers a search with no results as `input`: that is a title Metacritic doesn't have
+    if (r.class === "input") return [];
     // a block or rate limit won't clear by retrying: stop, and leave the rest unchecked
     if (r.class === "rate" || r.class === "blocked" || attempt === 3) throw new Error(`${q}: ${r.class}: ${r.reason}`);
     await sleep(5000 * attempt);
