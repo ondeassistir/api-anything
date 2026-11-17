@@ -47,11 +47,11 @@
         "html": {
           "items": "[data-testid=search-item]",
           "fields": {
-            "title": "p.c-search-item__title",
-            "type": "span.global-tag-list__button",
-            "url": "a.c-search-item@href",
-            "releaseDate": "li.c-search-product-meta__list-item span",
-            "metascore": "div.c-siteReviewScore span"
+            "title": "a > div.overflow-hidden > p",
+            "type": "[data-testid=tag-list] span",
+            "url": "a@href",
+            "releaseDate": "ul.truncate li span",
+            "metascore": ".c-siteReviewScore span"
           }
         }
       },
