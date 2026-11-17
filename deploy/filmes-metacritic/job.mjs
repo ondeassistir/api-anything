@@ -1,9 +1,10 @@
 // Fills filmes_shows.metacritic_score / metacritic_url for the titles never checked, then the oldest
 // checked (migration 013 in the filmes repo). One Metacritic search per title.
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY. Optional: BATCH (default 500), PAGE_DELAY_MS (2000),
-// RECHECK_DAYS (30).
+// RECHECK_DAYS (30). Email of the titles with no match: RESEND_API_KEY, EMAIL_FROM, EMAIL_TO (see report.mjs).
 import { call, shutdown } from "../../dist/index.js";
 import { pickResult, scoreOf } from "./match.mjs";
+import { sendReport } from "./report.mjs";
 
 const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) throw new Error("set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
@@ -46,6 +47,8 @@ async function search(q) {
 
 let matched = 0;
 let done = 0;
+let failure;
+const unmatched = [];
 try {
   for (const show of shows) {
     let hit = pickResult(show, await search(show.title));
@@ -66,10 +69,26 @@ try {
     if (!patch.ok) throw new Error(`supabase ${patch.status}: ${await patch.text()}`);
     done++;
     if (hit) matched++;
+    else {
+      unmatched.push({
+        id: show.id,
+        show_type: show.show_type,
+        title: show.title,
+        original_title: show.original_title,
+        year: show.show_type === "series" ? show.first_air_year : show.release_year,
+      });
+    }
     if (done % 50 === 0) console.log(`${done}/${shows.length} checked, ${matched} matched`);
     await sleep(delay);
   }
+} catch (e) {
+  failure = e;
 } finally {
   await shutdown();
   console.log(`checked ${done}, matched ${matched}`);
 }
+// the email says what was done even when the run stopped early; a failed email never fails the job
+await sendReport({ checked: done, matched, unmatched, error: failure?.message }).catch((e) =>
+  console.log(`report not sent: ${e.message}`),
+);
+if (failure) throw failure;

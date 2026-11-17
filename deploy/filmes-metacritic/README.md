@@ -11,3 +11,10 @@ after `RECHECK_DAYS` (30). A block or rate limit stops the run and leaves the re
 
 Env: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. Run with `node deploy/filmes-metacritic/job.mjs`;
 on Coolify, reuse `deploy/metacritic-weekly/Dockerfile` and add this as a scheduled task.
+
+**Email report.** With `RESEND_API_KEY`, `EMAIL_FROM` and `EMAIL_TO` set (the filmes cron's names; several
+recipients with commas), each run emails its counts and a table of the titles with no match (up to 1000
+rows), also when the run stopped early. Without `RESEND_API_KEY` nothing is sent; a failed email never
+fails the job.
+
+`check.sql` has queries to look at a matched title, the totals, and the unmatched titles.
