@@ -772,6 +772,10 @@ function classifyResponse(
     if (!op.response.html) return ok();
     const items = extractHtml(body, op.response.html);
     if (htmlFinds(op.response.html, items)) return ok();
+    // the recipe names the site's own no-results block: a page that shows it is that answer, even when
+    // the page also carries a hidden sign-in form (a site's header ships one on every page)
+    if (op.response.html.empty && emptyResults(body, { items: "", empty: op.response.html.empty }))
+      return ok("no results");
     if (loginPage(body)) return is("auth", "login page instead of content");
     if (emptyResults(body, op.response.html)) return ok("no results");
     const fields = Object.keys(op.response.html.fields).join(", ");

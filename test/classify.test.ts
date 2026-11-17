@@ -655,6 +655,13 @@ test("an html recipe's empty selector: a no-results page with no list container 
   assert.deepEqual(emptyResults(message.body, { ...recipe, empty: "p.none" }), '"p.none" is on the page');
   assert.equal(emptyResults(message.body, recipe), undefined);
   assert.match(emptyResults('<ul class="r"></ul>', recipe)!, /container of "ul.r li" is on the page and empty/);
+  // a header that ships a hidden sign-in form on every page doesn't turn the shown message into auth
+  const withForm = html(
+    200,
+    '<html><body><template><form><input type="password" autocomplete="current-password"><button>Sign in</button></form></template><p class="none">No results</p></body></html>',
+  );
+  assert.equal(cls(told, withForm), "ok");
+  assert.equal(cls(op({ response: { format: "html", html: recipe } }), withForm), "auth");
 });
 
 test("paging reads the next cursor from the whole answer, past extract and pick; a pick-emptied page is drift with none", () => {

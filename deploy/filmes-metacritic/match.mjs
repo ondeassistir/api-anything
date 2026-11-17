@@ -25,7 +25,9 @@ export function pickResult(show, results) {
   const names = new Set([norm(show.title), norm(show.original_title)].filter(Boolean));
   const bases = new Set([base(show.title), base(show.original_title)].filter(Boolean));
   if (!type || !names.size) return undefined;
-  const gapOf = (r) => (year && r.releaseDate ? Math.abs(Number(r.releaseDate.slice(-4)) - year) : 99);
+  // a result carries `year`, or a `releaseDate` ending in the year
+  const yearOf = (r) => Number(r.year ?? r.releaseDate?.slice(-4));
+  const gapOf = (r) => (year && yearOf(r) ? Math.abs(yearOf(r) - year) : 99);
   const best = (list) => {
     const found = list.map((r) => ({ r, gap: gapOf(r) })).sort((a, b) => a.gap - b.gap);
     if (!found.length || found[0].gap > 1 || (found[1] && found[1].gap === found[0].gap)) return undefined;

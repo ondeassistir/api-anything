@@ -3,10 +3,10 @@
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const MAX_ROWS = 1000;
 
-/** run: {checked, matched, unmatched: [{id, show_type, title, original_title, year}], error?} */
+/** run: {label?, checked, matched, unmatched: [{id, show_type, title, original_title, year}], error?} */
 export function buildReport(run) {
   const { checked, matched, unmatched, error } = run;
-  const subject = `Metacritic scores: ${matched}/${checked} matched, ${unmatched.length} not${error ? " (run stopped early)" : ""}`;
+  const subject = `${run.label ?? "Metacritic scores"}: ${matched}/${checked} matched, ${unmatched.length} not${error ? " (run stopped early)" : ""}`;
   const shown = unmatched.slice(0, MAX_ROWS);
   const rows = shown
     .map(

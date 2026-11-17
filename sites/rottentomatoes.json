@@ -167,7 +167,7 @@
     },
     {
       "name": "getMovieScores",
-      "description": "Read a movie’s public critic and audience scores and rating counts.",
+      "description": "Read a movie\u2019s public critic and audience scores and rating counts.",
       "request": {
         "method": "GET",
         "url": "https://www.rottentomatoes.com/m/%7Bslug%7D",
@@ -396,6 +396,162 @@
           },
           "expect": "result",
           "purpose": "The coming-soon category returns the public upcoming releases."
+        }
+      ]
+    },
+    {
+      "name": "searchTitles",
+      "description": "Search Rotten Tomatoes titles, first page: up to 10 movies and 10 TV shows with their Tomatometer. url tells the kind (/m/ movie, /tv/ show). Movie rows carry criticsScore and year; TV rows carry criticsScoreTv and startYear.",
+      "request": {
+        "method": "GET",
+        "url": "https://www.rottentomatoes.com/search?search=dune",
+        "headers": {
+          "accept": "text/html,application/xhtml+xml",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+        }
+      },
+      "slots": [
+        {
+          "param": "q",
+          "at": [
+            "query:search"
+          ]
+        }
+      ],
+      "volatile": [],
+      "trigger": {
+        "url": "https://www.rottentomatoes.com/search?search={q}"
+      },
+      "match": {
+        "method": "GET",
+        "host": "www.rottentomatoes.com",
+        "path": "/search"
+      },
+      "response": {
+        "format": "html",
+        "contentType": "text/html",
+        "html": {
+          "items": "search-page-media-row",
+          "empty": ".js-search-no-results",
+          "fields": {
+            "title": "a[data-qa=info-name]",
+            "url": "a[data-qa=info-name]@href",
+            "criticsScore": "@tomatometer-score",
+            "year": "@release-year",
+            "criticsScoreTv": "@tomatometerscore",
+            "startYear": "@startyear"
+          }
+        }
+      },
+      "params": [
+        {
+          "name": "q",
+          "type": "string",
+          "required": true,
+          "example": "dune",
+          "description": "Title to search for."
+        }
+      ],
+      "readOnly": true,
+      "minTier": 1,
+      "learnedLoggedIn": false,
+      "checks": [
+        {
+          "args": {
+            "q": "severance"
+          },
+          "expect": "result",
+          "purpose": "a TV show and a movie of that name"
+        },
+        {
+          "args": {
+            "q": "Binnelanders"
+          },
+          "expect": "empty",
+          "purpose": "a title the site has no results for"
+        }
+      ]
+    },
+    {
+      "name": "getTitleScores",
+      "description": "One Rotten Tomatoes movie or TV page: Tomatometer (critics) and Popcornmeter (audience) as percentages, with review counts. kind is m for a movie (/m/dune_2021) or tv for a show (/tv/dune_prophecy).",
+      "request": {
+        "method": "GET",
+        "url": "https://www.rottentomatoes.com/m/dune_2021",
+        "headers": {
+          "accept": "text/html,application/xhtml+xml",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+        }
+      },
+      "slots": [
+        {
+          "param": "kind",
+          "at": [
+            "path:0"
+          ]
+        },
+        {
+          "param": "slug",
+          "at": [
+            "path:1"
+          ]
+        }
+      ],
+      "volatile": [],
+      "trigger": {
+        "url": "https://www.rottentomatoes.com/{kind}/{slug}"
+      },
+      "match": {
+        "method": "GET",
+        "host": "www.rottentomatoes.com",
+        "path": "/*/*"
+      },
+      "response": {
+        "format": "embedded",
+        "contentType": "text/html",
+        "embedded": {
+          "regex": "id=\"media-scorecard-json\"[^>]*>\\s*(\\{)"
+        },
+        "pick": [
+          "criticsScore=criticsScore.scorePercent~(\\d+)",
+          "criticsReviews=criticsScore.reviewCount",
+          "criticsCertified=criticsScore.certified",
+          "audienceScore=audienceScore.scorePercent~(\\d+)",
+          "audienceRatings=audienceScore.bandedRatingCount"
+        ]
+      },
+      "params": [
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "example": "m",
+          "enum": [
+            "m",
+            "tv"
+          ],
+          "description": "m for a movie, tv for a TV show."
+        },
+        {
+          "name": "slug",
+          "type": "string",
+          "required": true,
+          "example": "dune_2021",
+          "pattern": "[a-z0-9_]{1,120}",
+          "hint": "the last path segment of the title's rottentomatoes.com URL"
+        }
+      ],
+      "readOnly": true,
+      "minTier": 1,
+      "learnedLoggedIn": false,
+      "checks": [
+        {
+          "args": {
+            "kind": "tv",
+            "slug": "dune_prophecy"
+          },
+          "expect": "result",
+          "purpose": "a TV show page"
         }
       ]
     }

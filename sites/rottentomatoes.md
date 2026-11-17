@@ -27,3 +27,9 @@ Captured movie pages for `the_godfather` and `parasite_2019`: the scorecard scri
 Browse captures used `movies_in_theaters` and `movies_at_home`; the held-out `movies_coming_soon` replay matched the server-rendered cards, including scores and release text. Lists overlapped on this date. All new reads replayed at tier 1 in a separate fresh home, without importing a session. Guest cookies caused the learner's logged-in heuristic to fire, so that metadata was corrected.
 
 The critic review page fetched a JSON endpoint keyed by a movie EMS ID, but the slug-to-ID lookup was embedded in HTML rather than a JSON request the learner can derive. A reliable slug-based review operation was not added. Critic consensus and TV network/end year were not recovered in the recipes. The pages automatically sent advertising, analytics, and a theme-preference request during capture; no write operation was called or learned.
+
+### searchTitles and getTitleScores (2026-11-17, signed out)
+
+`searchTitles` reads the same first search page as `searchMovies` but keeps both sections: up to 10 movies and 10 TV shows, with `url` telling the kind (`/m/` or `/tv/`). A movie row has `criticsScore` and `year`; a TV row has `criticsScoreTv` and `startYear` (the site spells their attributes differently). A search with no results answers `[]`.
+
+`getTitleScores` takes `kind` (`m` or `tv`) and the URL's last segment, and returns the Tomatometer and Popcornmeter percentages with the critic review count, from the page's scorecard data. A show's root page (`/tv/<slug>`) holds the average over its seasons. A score is empty when the page shows `--`.
