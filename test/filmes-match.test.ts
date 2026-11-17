@@ -44,3 +44,24 @@ test("tbd and missing scores are null", () => {
   assert.equal(scoreOf({ metascore: "tbd" }), null);
   assert.equal(scoreOf(undefined), null);
 });
+
+test("a subtitle on one side matches only in the exact year", () => {
+  const dune = [
+    r("Dune: Part One", "movie", "Oct 22, 2021", "74"),
+    r("Dune: Part Two", "movie", "Mar 1, 2024", "79"),
+    r("Dune", "movie", "Dec 14, 1984", "41"),
+  ];
+  assert.equal(pickResult({ show_type: "movie", title: "Dune", release_year: 2021 }, dune)?.metascore, "74");
+  assert.equal(pickResult({ show_type: "movie", title: "Dune: Part Two", release_year: 2024 }, dune)?.metascore, "79");
+  // the year is off by one: not enough for a subtitle match
+  assert.equal(pickResult({ show_type: "movie", title: "Dune", release_year: 2022 }, dune), undefined);
+  // no result of that year at all
+  assert.equal(pickResult({ show_type: "movie", title: "Dune", release_year: 2000 }, dune), undefined);
+  // the DB side may carry the subtitle instead
+  assert.equal(
+    pickResult({ show_type: "movie", title: "Dune: Part One", release_year: 2021 }, [
+      r("Dune", "movie", "Oct 22, 2021", "74"),
+    ])?.metascore,
+    "74",
+  );
+});
