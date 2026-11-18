@@ -26,4 +26,19 @@ export async function probe(q = "dune") {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) console.log(await probe(process.argv[2]));
+// the same title through api-anything's own call, which is what the job does: the two should agree
+export async function viaCall(q = "dune") {
+  const { call, shutdown } = await import("../../dist/index.js");
+  try {
+    const r = await call("rottentomatoes", "searchTitles", { q });
+    const { data, ...rest } = r;
+    return `call searchTitles ${JSON.stringify(q)}: ${r.ok ? `ok, ${data.length} rows` : "NOT ok"}\n${JSON.stringify(rest)}`;
+  } finally {
+    await shutdown();
+  }
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  console.log(await probe(process.argv[2]));
+  console.log(await viaCall(process.argv[2]));
+}

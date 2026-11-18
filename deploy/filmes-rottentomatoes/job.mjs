@@ -7,7 +7,7 @@ import { call, shutdown } from "../../dist/index.js";
 import { pickResult } from "../filmes-metacritic/match.mjs";
 import { sendReport } from "../filmes-metacritic/report.mjs";
 import { adaptSearch, pct } from "./adapt.mjs";
-import { probe } from "./probe.mjs";
+import { probe, viaCall } from "./probe.mjs";
 
 const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) throw new Error("set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
@@ -96,7 +96,7 @@ try {
 } catch (e) {
   failure = e;
   // a failure before the first title is saved is nearly always what the site sends this machine: show it
-  if (done === 0) console.log(await probe(shows[0]?.title));
+  if (done === 0) console.log(await probe(shows[0]?.title), "\n", await viaCall(shows[0]?.title).catch((x) => x.message));
 } finally {
   await shutdown();
   console.log(`checked ${done}, matched ${matched}`);
